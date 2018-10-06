@@ -1,0 +1,7 @@
+node_modules
+*.gem
+*.rbc
+.vscode
+.idea
+.DS_Store
+upload/
