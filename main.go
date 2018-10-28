@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"os/signal"
 	"flag"
 	"fmt"
 	"log"
@@ -19,6 +21,23 @@ func getEnv(env string) string {
 var version string
 
 func main() {
+
+	var address, port, path string
+	var v bool
+	defultAddr := "127.0.0.1" 
+
+	path = getEnv("HOME")
+	flag.StringVar(&address, "addr", defultAddr, "IP address of fileserver where it runs")
+	flag.StringVar(&port, "port", "8080", "Port where fileserver runs on")
+	flag.StringVar(&path, "path", path, "Directory Path which you want to share using fileserver")
+	flag.BoolVar(&v,"v",false,"display version of fileserver")
+	flag.Parse()
+
+	if v {
+		fmt.Println("Version: "+version)
+		os.Exit(0)
+	}
+
 	var ipv4Addr []string
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -33,23 +52,10 @@ func main() {
 			ipv4Addr = append(ipv4Addr, addr)
 		}
 	}
-
-	var defultAddr string
-
-	if len(ipv4Addr) == 1 {
-		defultAddr = ipv4Addr[0]
-	} else {
-		defultAddr = "127.0.0.1"
+	
+	if len(ipv4Addr) > 0 {
+		address = ipv4Addr[0]
 	}
-
-	var address, port, path string
-	var v bool
-	path = getEnv("HOME")
-	flag.StringVar(&address, "addr", defultAddr, "IP address of fileserver where it runs")
-	flag.StringVar(&port, "port", "8080", "Port where fileserver runs on")
-	flag.StringVar(&path, "path", path, "Directory Path which you want to share using fileserver")
-	flag.BoolVar(&v,"v",false,"display version of fileserver")
-	flag.Parse()
 
 	if path == "." {
 		cwd,err := os.Getwd()
@@ -59,19 +65,39 @@ func main() {
 		path = cwd
 	}
 
-	if v {
-		fmt.Println("Version: "+version)
-		os.Exit(0)
-	}
-
 	color := func(s string) string {
 		return fmt.Sprintf("\x1b[1;33m%v\x1b[0m", s)
 	}
 
 	fileServerHandler := http.FileServer(http.Dir(path))
+	c := make(chan os.Signal, 1)
+
+	signal.Notify(c,os.Interrupt)
+
+	server := http.Server{
+		Handler: fileServerHandler,
+		Addr: address+":"+port,
+		ReadTimeout: 10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
 	go func() {
 		time.Sleep(time.Millisecond * 300)
-		fmt.Printf("Server running on %v%v:%v serving %v",color("http://") ,color(address), color(port), color(path))
+		fmt.Printf("Server running on %v%v:%v serving %v\n",color("http://") ,color(address), color(port), color(path))
 	}()
-	log.Fatalln(http.ListenAndServe(address+":"+port, fileServerHandler))
+
+	go func() {
+		if err := server.ListenAndServe() ; err != nil {
+			log.Println(err)
+		}
+	}()
+
+	<-c
+	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	defer cancel()
+
+	server.Shutdown(ctx)
+	log.Println("Recevied SIGINT signal")
+	log.Println("shutting down server")
+    os.Exit(0)
 }

@@ -11,5 +11,5 @@ build:
 	mkdir -p ~/Documents/fileserver-bin/${VERSION}/windows ;
 	mv fileserver.exe  ~/Documents/fileserver-bin/${VERSION}/windows
 
-upload:
-	cd ~/go/src/fileserver/upload && go run main.go -v ${VERSION}
+fileserver-upload:
+	cd ./upload && go run main.go -v ${VERSION}
