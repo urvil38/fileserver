@@ -1,15 +1,10 @@
-LDFLAGS=1.0.0
-VERSION=v1.0
-LIST=linux darwin
-build:
-	@for os in $(LIST); do \
-		CGO_ENABLED=0 GOOS=$$os GOARCH=amd64 go build -ldflags="-s -X main.version=${LDFLAGS}" . ; \
-		mkdir -p ~/Documents/fileserver-bin/${VERSION}/$$os ; \
-		mv fileserver  ~/Documents/fileserver-bin/${VERSION}/$$os ; done \
+LDFLAGS=v1.0.0
 
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -X main.version=${LDFLAGS}" .
-	mkdir -p ~/Documents/fileserver-bin/${VERSION}/windows ;
-	mv fileserver.exe  ~/Documents/fileserver-bin/${VERSION}/windows
+linux-build:
+	GOOS=linux GOARCH=amd64 go build -ldflags="-s -X main.version=${LDFLAGS}" .
 
-fileserver-upload:
-	cd ./upload && go run main.go -v ${VERSION}
+macos-build:
+	GOOS=darwin GOARCH=amd64 go build -ldflags="-s -X main.version=${LDFLAGS}" .
+
+windows-build:
+	GOOS=windows GOARCH=amd64 go build -ldflags="-s -X main.version=${LDFLAGS}" .

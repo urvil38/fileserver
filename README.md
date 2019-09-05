@@ -1,43 +1,31 @@
 # Fileserver
 
-![fileserver-0](https://storage.googleapis.com/fileserver-bin/fileserver-0.png)
+![fileserver-0](./docs/img/fileserver-0.png)
+![fileserver-1](./docs/img/fileserver-1.png)
 
-![fileserver-1](https://storage.googleapis.com/fileserver-bin/fileserver-1.png)
+# Build
 
-# Downloads
-### Linux and Macos:
-1. For Linux and macos user you download fileserver with `curl`:
-
-    #### Linux:
-
-    ```
-    $ curl -LO https://storage.googleapis.com/fileserver-bin/v1.0/linux/fileserver 
-    ```
-
-    #### MacOs:
-
-    ```
-    $ curl -LO https://storage.googleapis.com/fileserver-bin/v1.0/darwin/fileserver
-    ```
-
-2. Make binary executable :
-    ```
-    $ chmod +x ./fileserver
-    ```
-
-3. move binary file to bin directory :
-
-    Typically these commands must be run as root or through `sudo`.
-    ```
-    $ mv fileserver /usr/local/bin
-    ```
-
-### Windows:
-
-You can download this binary from this url using your browser:
-
-Go to this URL for download fileserver:
+- If you want to build opa-iptables right away, you need a working [Go environment](https://golang.org/doc/install). It requires Go version 1.12 and above.
 
 ```
-https://storage.googleapis.com/fileserver-bin/v1.0/windows/fileserver.exe
+$ git clone https://github.com/urvil38/fileserver.git
+$ cd fileserver
+```
+
+## For Linux:
+
+```
+$ make linux-build
+```
+
+## For MacOs/Darwin:
+
+```
+$ make macos-build
+```
+
+## For Windows:
+
+```
+$ make windows-build
 ```
