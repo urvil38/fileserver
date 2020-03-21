@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 )
 
@@ -39,31 +38,11 @@ func main() {
 	}
 
 	if address == defultAddr {
-
-		var ipv4Addr []string
-		hostname, err := os.Hostname()
+		ip, err := externalIP()
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		if address == "localhost" {
-			hostname = "localhost"
-		}
-
-		addrs, err := net.LookupHost(hostname)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, addr := range addrs {
-			if !strings.Contains(addr, "::") {
-				ipv4Addr = append(ipv4Addr, addr)
-			}
-		}
-
-		if len(ipv4Addr) > 0 {
-			address = ipv4Addr[0]
-		}
+		address = ip
 	}
 
 	if path == "." {
@@ -109,4 +88,42 @@ func main() {
 	log.Println("Recevied SIGINT signal")
 	log.Println("shutting down server")
 	os.Exit(0)
+}
+
+func externalIP() (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagUp == 0 {
+			continue // interface down
+		}
+		if iface.Flags&net.FlagLoopback != 0 {
+			continue // loopback interface
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			return "", err
+		}
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+			if ip == nil || ip.IsLoopback() {
+				continue
+			}
+
+			ip = ip.To4()
+			if ip == nil {
+				continue // not an ipv4 address
+			}
+			return ip.String(), nil
+		}
+	}
+	return "127.0.0.1", nil
 }
