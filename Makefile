@@ -1,10 +1,13 @@
-LDFLAGS=v1.0.0
+# Setup name variables for the package/tool
+NAME := fileserver
+PKG := github.com/urvil38/$(NAME)
 
-linux-build:
-	GOOS=linux GOARCH=amd64 go build -ldflags="-w -X main.version=${LDFLAGS}" .
+CGO_ENABLED := 0
 
-macos-build:
-	GOOS=darwin GOARCH=amd64 go build -ldflags="-w -X main.version=${LDFLAGS}" .
+# Set any default go build tags.
+BUILDTAGS :=
 
-windows-build:
-	GOOS=windows GOARCH=amd64 go build -ldflags="-w -X main.version=${LDFLAGS}" .
+include basic.mk
+
+.PHONY: prebuild
+prebuild:

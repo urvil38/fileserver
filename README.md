@@ -11,21 +11,3 @@
 $ git clone https://github.com/urvil38/fileserver.git
 $ cd fileserver
 ```
-
-## For Linux:
-
-```
-$ make linux-build
-```
-
-## For MacOs/Darwin:
-
-```
-$ make macos-build
-```
-
-## For Windows:
-
-```
-$ make windows-build
-```

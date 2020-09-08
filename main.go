@@ -10,6 +10,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/urvil38/fileserver/version"
 )
 
 func getEnv(env string) string {
@@ -17,27 +19,27 @@ func getEnv(env string) string {
 	return val
 }
 
-var version string
+var defaultAddr = "127.0.0.1"
 
 func main() {
 
 	var address, port, path string
 	var v bool
-	defultAddr := "127.0.0.1"
 
 	path = getEnv("HOME")
-	flag.StringVar(&address, "addr", defultAddr, "IP address of fileserver where it runs")
+	flag.StringVar(&address, "addr", defaultAddr, "IP address of fileserver where it runs")
 	flag.StringVar(&port, "port", "8080", "Port where fileserver runs on")
 	flag.StringVar(&path, "path", path, "Directory Path which you want to share using fileserver")
 	flag.BoolVar(&v, "v", false, "display version of fileserver")
 	flag.Parse()
 
 	if v {
-		fmt.Println("Version: " + version)
+		fmt.Println("Version: " + version.VERSION)
+		fmt.Println("Git Commit: " + version.GITCOMMIT)
 		os.Exit(0)
 	}
 
-	if address == defultAddr {
+	if address == defaultAddr {
 		ip, err := externalIP()
 		if err != nil {
 			log.Fatal(err)
@@ -125,5 +127,5 @@ func externalIP() (string, error) {
 			return ip.String(), nil
 		}
 	}
-	return "127.0.0.1", nil
+	return defaultAddr, nil
 }
