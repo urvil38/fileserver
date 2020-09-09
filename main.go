@@ -19,7 +19,9 @@ func getEnv(env string) string {
 	return val
 }
 
-var defaultAddr = "127.0.0.1"
+const (
+	defaultAddr = "127.0.0.1"
+)
 
 func main() {
 
@@ -59,13 +61,11 @@ func main() {
 		return fmt.Sprintf("\x1b[1;33m%v\x1b[0m", s)
 	}
 
-	fileServerHandler := http.FileServer(http.Dir(path))
 	c := make(chan os.Signal, 1)
-
 	signal.Notify(c, os.Interrupt)
 
 	server := http.Server{
-		Handler:      fileServerHandler,
+		Handler:      &GzHandler{path: path},
 		Addr:         address + ":" + port,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -86,9 +86,20 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	server.Shutdown(ctx)
 	log.Println("Recevied SIGINT signal")
 	log.Println("shutting down server")
+
+	err := server.Shutdown(ctx)
+	if err != nil {
+		if err == context.DeadlineExceeded {
+			fmt.Print("finish: shutdown timeout for")
+		} else {
+			fmt.Print("finish: error while shutting down")
+		}
+	} else {
+		fmt.Println("finish: closed")
+	}
+
 	os.Exit(0)
 }
 
