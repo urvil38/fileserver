@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,67 +19,55 @@ func getEnv(env string) string {
 }
 
 const (
-	defaultAddr = "127.0.0.1"
+	defaultAddr    = "localhost"
+	defaultTimeout = 10 * time.Second
 )
 
 func main() {
 
-	var address, port, path string
-	var v bool
-
-	path = getEnv("HOME")
-	flag.StringVar(&address, "addr", defaultAddr, "IP address of fileserver where it runs")
-	flag.StringVar(&port, "port", "8080", "Port where fileserver runs on")
-	flag.StringVar(&path, "path", path, "Directory Path which you want to share using fileserver")
-	flag.BoolVar(&v, "v", false, "display version of fileserver")
+	homePath := getEnv("HOME")
+	host := flag.String("host", defaultAddr, "IP address of fileserver where it runs")
+	port := flag.String("port", "8080", "Port where fileserver runs on")
+	rootDir := flag.String("path", homePath, "Directory Path which you want to share using fileserver")
+	certFile := flag.String("cert", "", "path to the public cert")
+	keyFile := flag.String("key", "", "path to the private key")
+	gzip := flag.Bool("gzip", false, "enable gzip")
+	v := flag.Bool("v", false, "display version of fileserver")
 	flag.Parse()
 
-	if v {
+	if *v {
 		fmt.Println("Version: " + version.VERSION)
 		fmt.Println("Git Commit: " + version.GITCOMMIT)
 		os.Exit(0)
 	}
 
-	if address == defaultAddr {
+	if *host == defaultAddr {
 		ip, err := externalIP()
 		if err != nil {
 			log.Fatal(err)
 		}
-		address = ip
+		*host = ip
 	}
 
-	if path == "." {
+	if *rootDir == "." {
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Fatalln(err)
 		}
-		path = cwd
+		*rootDir = cwd
 	}
 
-	color := func(s string) string {
-		return fmt.Sprintf("\x1b[1;33m%v\x1b[0m", s)
+	var handle http.Handler
+	if *gzip {
+		handle = &GzHandler{path: *rootDir}
 	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	server := http.Server{
-		Handler:      &GzHandler{path: path},
-		Addr:         address + ":" + port,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
+	fs := NewFileServer(*host, *port, *rootDir, *certFile, *keyFile, defaultTimeout, handle)
 
-	go func() {
-		time.Sleep(time.Millisecond * 300)
-		fmt.Printf("Server running on %v%v:%v serving %v\n", color("http://"), color(address), color(port), color(path))
-	}()
-
-	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			log.Println(err)
-		}
-	}()
+	go fs.Start()
 
 	<-c
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -89,54 +76,6 @@ func main() {
 	log.Println("Recevied SIGINT signal")
 	log.Println("shutting down server")
 
-	err := server.Shutdown(ctx)
-	if err != nil {
-		if err == context.DeadlineExceeded {
-			fmt.Print("finish: shutdown timeout for")
-		} else {
-			fmt.Print("finish: error while shutting down")
-		}
-	} else {
-		fmt.Println("finish: closed")
-	}
-
+	fs.Stop(ctx)
 	os.Exit(0)
-}
-
-func externalIP() (string, error) {
-	ifaces, err := net.Interfaces()
-	if err != nil {
-		return "", err
-	}
-	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 {
-			continue // interface down
-		}
-		if iface.Flags&net.FlagLoopback != 0 {
-			continue // loopback interface
-		}
-		addrs, err := iface.Addrs()
-		if err != nil {
-			return "", err
-		}
-		for _, addr := range addrs {
-			var ip net.IP
-			switch v := addr.(type) {
-			case *net.IPNet:
-				ip = v.IP
-			case *net.IPAddr:
-				ip = v.IP
-			}
-			if ip == nil || ip.IsLoopback() {
-				continue
-			}
-
-			ip = ip.To4()
-			if ip == nil {
-				continue // not an ipv4 address
-			}
-			return ip.String(), nil
-		}
-	}
-	return defaultAddr, nil
 }
