@@ -26,11 +26,11 @@ const (
 func main() {
 
 	homePath := getEnv("HOME")
-	host := flag.String("host", defaultAddr, "IP address of fileserver where it runs")
-	port := flag.String("port", "8080", "Port where fileserver runs on")
-	rootDir := flag.String("path", homePath, "Directory Path which you want to share using fileserver")
-	certFile := flag.String("cert", "", "path to the public cert")
-	keyFile := flag.String("key", "", "path to the private key")
+	host := flag.String("host", defaultAddr, "IP address of fileserver on which it listen on")
+	port := flag.String("port", "8080", "port on which fileserver runs on")
+	rootDir := flag.String("path", homePath, "path to the directory you want to share using fileserver")
+	certFile := flag.String("cert", "", "path to the public cert file")
+	keyFile := flag.String("key", "", "path to the private key file")
 	gzip := flag.Bool("gzip", false, "enable gzip")
 	v := flag.Bool("v", false, "display version of fileserver")
 	flag.Parse()

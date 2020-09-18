@@ -13,7 +13,7 @@ type fileServer struct {
 	s         *http.Server
 	TLSEnable bool
 	scheme    string
-	host   string
+	host      string
 	port      string
 	rootDir   string
 	certFile  string
@@ -24,7 +24,7 @@ func NewFileServer(host, port, rootDir, certFile, keyFile string, timeout time.D
 	s := http.Server{
 		ReadTimeout:  timeout,
 		WriteTimeout: timeout,
-		Addr:         net.JoinHostPort(host,port),
+		Addr:         net.JoinHostPort(host, port),
 	}
 
 	if handler == nil {
@@ -34,7 +34,7 @@ func NewFileServer(host, port, rootDir, certFile, keyFile string, timeout time.D
 	}
 
 	fs := &fileServer{
-		host:  host,
+		host:     host,
 		port:     port,
 		rootDir:  rootDir,
 		certFile: certFile,
