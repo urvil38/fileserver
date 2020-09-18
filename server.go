@@ -56,7 +56,7 @@ func (fs *fileServer) Start() {
 
 	fmt.Printf("Server is running on %v%v:%v serving %v\n", color(fs.scheme), color(fs.host), color(fs.port), color(fs.rootDir))
 
-	if fs.certFile != "" && fs.keyFile != "" {
+	if fs.TLSEnable {
 		err := fs.s.ListenAndServeTLS(fs.certFile, fs.keyFile)
 		if err != nil {
 			log.Fatal(err)
