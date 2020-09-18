@@ -7,17 +7,17 @@
 ```
 Usage of ./fileserver:
   -cert string
-        path to the public cert
+        path to the public cert file
   -gzip
         enable gzip
   -host string
-        IP address of fileserver where it runs (default "localhost")
+        IP address of fileserver on which it listen on (default "localhost")
   -key string
-        path to the private key
+        path to the private key file
   -path string
-        Directory Path which you want to share using fileserver (default "/Users/urvilpatel")
+        path to the directory you want to share using fileserver (default "/Users/urvilpatel")
   -port string
-        Port where fileserver runs on (default "8080")
+        port on which fileserver runs on (default "8080")
   -v    display version of fileserver
 ```
 
