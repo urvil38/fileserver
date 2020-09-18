@@ -10,4 +10,5 @@
 ```
 $ git clone https://github.com/urvil38/fileserver.git
 $ cd fileserver
+$ make
 ```
