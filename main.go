@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"time"
@@ -19,9 +18,24 @@ func getEnv(env string) string {
 }
 
 const (
-	defaultAddr    = "localhost"
+	defaultAddr    = "0.0.0.0"
 	defaultTimeout = 10 * time.Second
 )
+
+type Config struct {
+	host         string
+	port         string
+	rootDir      string
+	certFile     string
+	keyFile      string
+	timeout      time.Duration
+	gzipEnable   bool
+	hideDotFiles bool
+	silent       bool
+	logIP        bool
+	username     string
+	password     string
+}
 
 func main() {
 
@@ -31,7 +45,13 @@ func main() {
 	rootDir := flag.String("path", homePath, "path to the directory you want to share using fileserver")
 	certFile := flag.String("cert", "", "path to the public cert file")
 	keyFile := flag.String("key", "", "path to the private key file")
+	timeout := flag.Duration("timeout", defaultTimeout, "read/write timeout")
+	hideDotFiles := flag.Bool("no-dotfiles", false, "weather to show file starting with dot i.e. hidden files")
+	silent := flag.Bool("silent", false, "Suppress log messages from output")
+	logIP := flag.Bool("log-ip", false, "Log ip address of incoming request")
 	gzip := flag.Bool("gzip", false, "enable gzip")
+	username := flag.String("username", "", "Username for basic authentication")
+	password := flag.String("password", "", "Password for basic authentication")
 	v := flag.Bool("v", false, "display version of fileserver")
 	flag.Parse()
 
@@ -39,14 +59,6 @@ func main() {
 		fmt.Println("Version: " + version.VERSION)
 		fmt.Println("Git Commit: " + version.GITCOMMIT)
 		os.Exit(0)
-	}
-
-	if *host == defaultAddr {
-		ip, err := externalIP()
-		if err != nil {
-			log.Fatal(err)
-		}
-		*host = ip
 	}
 
 	if *rootDir == "." {
@@ -57,15 +69,23 @@ func main() {
 		*rootDir = cwd
 	}
 
-	var handle http.Handler
-	if *gzip {
-		handle = &GzHandler{path: *rootDir}
-	}
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	fs := NewFileServer(*host, *port, *rootDir, *certFile, *keyFile, defaultTimeout, handle)
+	fs := NewFileServer(Config{
+		rootDir:      *rootDir,
+		host:         *host,
+		port:         *port,
+		certFile:     *certFile,
+		keyFile:      *keyFile,
+		gzipEnable:   *gzip,
+		timeout:      *timeout,
+		hideDotFiles: *hideDotFiles,
+		silent:       *silent,
+		logIP:        *logIP,
+		username:     *username,
+		password:     *password,
+	})
 
 	go fs.Start()
 
