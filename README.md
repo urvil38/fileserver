@@ -5,20 +5,32 @@
 # Usage
 
 ```
-Usage of ./fileserver:
+Usage of fileserver:
   -cert string
-        path to the public cert file
+    	path to the public cert file
   -gzip
-        enable gzip
+    	enable gzip
   -host string
-        IP address of fileserver on which it listen on (default "localhost")
+    	IP address of fileserver on which it listen on (default "0.0.0.0")
   -key string
-        path to the private key file
+    	path to the private key file
+  -log-ip
+    	Log ip address of incoming request
+  -no-dotfiles
+    	weather to show file starting with dot i.e. hidden files
+  -password string
+    	Password for basic authentication
   -path string
-        path to the directory you want to share using fileserver (default "/Users/urvilpatel")
+    	path to the directory you want to share using fileserver (default "/Users/urvilpatel")
   -port string
-        port on which fileserver runs on (default "8080")
-  -v    display version of fileserver
+    	port on which fileserver runs on (default "8080")
+  -silent
+    	Suppress log messages from output
+  -timeout duration
+    	read/write timeout (default 10s)
+  -username string
+    	Username for basic authentication
+  -v	display version of fileserver
 ```
 
 
