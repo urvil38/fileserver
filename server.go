@@ -11,6 +11,11 @@ import (
 	"text/tabwriter"
 )
 
+const (
+	correctEmoji = "✔︎"
+	wrongEmoji   = "✗"
+)
+
 type fileServer struct {
 	c               Config
 	s               *http.Server
@@ -93,6 +98,10 @@ func yellow(s string) string {
 	return fmt.Sprintf("\x1b[1;33m%v\x1b[0m", s)
 }
 
+func red(s string) string {
+	return fmt.Sprintf("\x1b[1;31m%v\x1b[0m", s)
+}
+
 func yellowUnderline(s string) string {
 	return fmt.Sprintf("\x1b[4;33m%v\x1b[0m", s)
 }
@@ -138,39 +147,39 @@ func (fs fileServer) getConf() string {
 	w := tabwriter.NewWriter(&buf, 5, 0, 1, ' ', tabwriter.AlignRight)
 
 	if fs.BasicAuthEnable {
-		fmt.Fprintln(w, "Basic Auth:\t on")
+		fmt.Fprintln(w, "Basic Auth:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "Basic Auth:\t off")
+		fmt.Fprintln(w, "Basic Auth:\t "+red(wrongEmoji))
 	}
 
 	if fs.c.gzipEnable {
-		fmt.Fprintln(w, "gzip:\t on")
+		fmt.Fprintln(w, "gzip:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "gzip:\t off")
+		fmt.Fprintln(w, "gzip:\t "+red(wrongEmoji))
 	}
 
 	if fs.TLSEnable {
-		fmt.Fprintln(w, "TLS:\t on")
+		fmt.Fprintln(w, "TLS:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "TLS:\t off")
+		fmt.Fprintln(w, "TLS:\t "+red(wrongEmoji))
 	}
 
 	if fs.c.silent {
-		fmt.Fprintln(w, "silent mode:\t on")
+		fmt.Fprintln(w, "silent mode:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "silent mode:\t off")
+		fmt.Fprintln(w, "silent mode:\t "+red(wrongEmoji))
 	}
 
 	if fs.c.logIP {
-		fmt.Fprintln(w, "log IP Addr:\t true")
+		fmt.Fprintln(w, "log IP Addr:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "log IP Addr:\t false")
+		fmt.Fprintln(w, "log IP Addr:\t "+red(wrongEmoji))
 	}
 
 	if fs.c.hideDotFiles {
-		fmt.Fprintln(w, "hide dot files:\t true")
+		fmt.Fprintln(w, "hide dot files:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "hide dot files:\t false")
+		fmt.Fprintln(w, "hide dot files:\t "+red(wrongEmoji))
 	}
 
 	fmt.Fprintln(w, fmt.Sprintf("Read/Write Timeout:\t %v", fs.c.timeout))
