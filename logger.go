@@ -26,7 +26,7 @@ func loggingHandler(h http.Handler, c Config) http.Handler {
 		lrw := newLoggingResponseWriter(w)
 		h.ServeHTTP(lrw, r)
 		if c.logIP {
-			log.Printf("%v - [%v] \"%v\" %v\n", remoteAddr(r), r.Method, r.URL, lrw.statusCode)
+			log.Printf("- %v - [%v] \"%v\" %v\n", remoteAddr(r), r.Method, r.URL, lrw.statusCode)
 		} else {
 			log.Printf("[%v] \"%v\" %v\n", r.Method, r.URL, lrw.statusCode)
 		}
