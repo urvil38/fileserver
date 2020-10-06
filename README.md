@@ -18,6 +18,12 @@ $ chmod +x ./fileserver
 $ sudo mv ./fileserver /usr/local/bin
 ```
 
+- Download usign `go get`
+
+```
+$ go get -u github.com/urvil38/fileserver
+```
+
 # Usage
 
 ```
