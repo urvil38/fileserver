@@ -1,3 +1,8 @@
+# Fileserver
+
+![fileserver-0](./docs/img/fileserver-0.png)
+![fileserver-1](./docs/img/fileserver-1.png)
+
 # Download
 
 - Download appropriate pre-compiled binary from the [release](https://github.com/urvil38/fileserver/releases) page.
@@ -43,12 +48,6 @@ Usage of fileserver:
     	Username for basic authentication
   -v	display version of fileserver
 ```
-
-
-# Fileserver
-
-![fileserver-0](./docs/img/fileserver-0.png)
-![fileserver-1](./docs/img/fileserver-1.png)
 
 # Build
 
