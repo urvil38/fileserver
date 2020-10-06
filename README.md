@@ -9,7 +9,7 @@ $ curl -s https://github.com/urvil38/fileserver/releases/download/3.0.0/fileserv
 # make binary executable
 $ chmod +x ./fileserver
 
-# move it to bin dir (user need to has root privileges. Run as root user using sudo.
+# move it to bin dir (user need to has root privileges. run following command as root user using sudo.
 $ sudo mv ./fileserver /usr/local/bin
 ```
 
