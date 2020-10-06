@@ -9,7 +9,7 @@
 
 ```
 # download binary using cURL
-$ curl -L https://github.com/urvil38/fileserver/releases/download/3.0.0/fileserver-darwin-amd64 -o fileserver
+$ curl -L https://github.com/urvil38/fileserver/releases/download/3.0.1/fileserver-darwin-amd64 -o fileserver
 
 # make binary executable
 $ chmod +x ./fileserver
