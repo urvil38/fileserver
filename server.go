@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -83,12 +84,12 @@ func (fs *fileServer) Start() {
 
 	if fs.TLSEnable {
 		err := fs.s.ListenAndServeTLS(fs.c.certFile, fs.c.keyFile)
-		if err != nil {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
 	} else {
 		err := fs.s.ListenAndServe()
-		if err != nil {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
 	}
