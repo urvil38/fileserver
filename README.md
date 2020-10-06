@@ -2,6 +2,17 @@
 
 - Download appropriate pre-compiled binary from the [release](https://github.com/urvil38/fileserver/releases) page.
 
+```
+# download binary using cURL
+$ curl -s https://github.com/urvil38/fileserver/releases/download/3.0.0/fileserver-darwin-amd64 -o fileserver
+
+# make binary executable
+$ chmod +x ./fileserver
+
+# move it to bin dir (user need to has root privileges. Run as root user using sudo.
+$ sudo mv ./fileserver /usr/local/bin
+```
+
 # Usage
 
 ```
