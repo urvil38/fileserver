@@ -9,11 +9,6 @@ import (
 	"net/http"
 )
 
-const (
-	correctEmoji = "✔︎"
-	wrongEmoji   = "✗"
-)
-
 type fileServer struct {
 	c               Config
 	s               *http.Server
@@ -62,7 +57,7 @@ func NewFileServer(c Config) *fileServer {
 	}
 
 	if !c.silent {
-		s.Handler = loggingHandler(s.Handler, c)
+		s.Handler = loggingHandler(s.Handler, c.logIP)
 	}
 
 	if c.keyFile != "" && c.certFile != "" {

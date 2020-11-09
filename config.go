@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	correctEmoji = "✔︎"
+	wrongEmoji   = "✗"
+)
+
 type Config struct {
 	host         string
 	port         string
