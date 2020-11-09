@@ -18,7 +18,7 @@ $ chmod +x ./fileserver
 $ sudo mv ./fileserver /usr/local/bin
 ```
 
-- Download usign `go get`
+- Download using `go get`
 
 ```
 $ go get -u github.com/urvil38/fileserver
