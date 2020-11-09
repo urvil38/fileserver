@@ -22,21 +22,6 @@ const (
 	defaultTimeout = 10 * time.Second
 )
 
-type Config struct {
-	host         string
-	port         string
-	rootDir      string
-	certFile     string
-	keyFile      string
-	timeout      time.Duration
-	gzipEnable   bool
-	hideDotFiles bool
-	silent       bool
-	logIP        bool
-	username     string
-	password     string
-}
-
 func main() {
 
 	homePath := getEnv("HOME")

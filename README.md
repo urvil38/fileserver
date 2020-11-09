@@ -9,13 +9,19 @@
 
 ```
 # download binary using cURL
-$ curl -L https://github.com/urvil38/fileserver/releases/download/3.0.0/fileserver-darwin-amd64 -o fileserver
+$ curl -L https://github.com/urvil38/fileserver/releases/download/3.0.1/fileserver-darwin-amd64 -o fileserver
 
 # make binary executable
 $ chmod +x ./fileserver
 
 # move it to bin dir (user need to has root privileges. run following command as root user using sudo.
 $ sudo mv ./fileserver /usr/local/bin
+```
+
+- Download using `go get`
+
+```
+$ go get -u github.com/urvil38/fileserver
 ```
 
 # Usage
