@@ -46,7 +46,7 @@ Usage of fileserver:
     	path to the directory you want to share using fileserver (default "/Users/urvilpatel")
   -port string
     	port on which fileserver runs on (default "8080")
-  -silent
+  -quiet
     	Suppress log messages from output
   -timeout duration
     	read/write timeout (default 10s)
