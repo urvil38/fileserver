@@ -24,6 +24,16 @@ $ sudo mv ./fileserver /usr/local/bin
 $ go get -u github.com/urvil38/fileserver
 ```
 
+# Docker
+- Build Docker image:
+```
+$ make image
+```
+
+- Run fileserver using Docker:
+```
+$ docker run -d -p 8080:8080 -v $(PWD):/$(PWD) urvil38/fileserver:3.0.1 fileserver -port 8080 -path /
+```
 # Usage
 
 ```
