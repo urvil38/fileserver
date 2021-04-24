@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	correctEmoji = "✔︎"
+	wrongEmoji   = "✗"
+)
+
 type Config struct {
 	host         string
 	port         string
@@ -18,7 +23,7 @@ type Config struct {
 	timeout      time.Duration
 	gzipEnable   bool
 	hideDotFiles bool
-	silent       bool
+	quiet        bool
 	logIP        bool
 	username     string
 	password     string
@@ -27,7 +32,7 @@ type Config struct {
 func (fs fileServer) String() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("Starting up File Server, Serving %v\n", yellow(fs.c.rootDir)))
+	sb.WriteString(fmt.Sprintf("Starting up File Server, Serving %v\n", yellow(fs.config.rootDir)))
 
 	conf := fs.getConf()
 
@@ -38,12 +43,12 @@ func (fs fileServer) String() string {
 
 	sb.WriteString(yellowUnderline("Available on:\n"))
 	var addrs []string
-	if fs.c.host == defaultAddr {
-		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, "127.0.0.1", fs.c.port)))
+	if fs.config.host == defaultAddr {
+		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, "127.0.0.1", fs.config.port)))
 		extIP, _ := externalIP()
-		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, extIP, fs.c.port)))
+		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, extIP, fs.config.port)))
 	} else {
-		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, fs.c.host, fs.c.port)))
+		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, fs.config.host, fs.config.port)))
 	}
 	sb.WriteString(strings.Join(addrs, "\n"))
 
@@ -62,7 +67,7 @@ func (fs fileServer) getConf() string {
 		fmt.Fprintln(w, "Basic Auth:\t "+red(wrongEmoji))
 	}
 
-	if fs.c.gzipEnable {
+	if fs.config.gzipEnable {
 		fmt.Fprintln(w, "gzip:\t "+green(correctEmoji))
 	} else {
 		fmt.Fprintln(w, "gzip:\t "+red(wrongEmoji))
@@ -74,25 +79,25 @@ func (fs fileServer) getConf() string {
 		fmt.Fprintln(w, "TLS:\t "+red(wrongEmoji))
 	}
 
-	if fs.c.silent {
-		fmt.Fprintln(w, "silent mode:\t "+green(correctEmoji))
+	if fs.config.quiet {
+		fmt.Fprintln(w, "quiet:\t "+green(correctEmoji))
 	} else {
-		fmt.Fprintln(w, "silent mode:\t "+red(wrongEmoji))
+		fmt.Fprintln(w, "quiet:\t "+red(wrongEmoji))
 	}
 
-	if fs.c.logIP {
+	if fs.config.logIP {
 		fmt.Fprintln(w, "log IP Addr:\t "+green(correctEmoji))
 	} else {
 		fmt.Fprintln(w, "log IP Addr:\t "+red(wrongEmoji))
 	}
 
-	if fs.c.hideDotFiles {
+	if fs.config.hideDotFiles {
 		fmt.Fprintln(w, "hide dot files:\t "+green(correctEmoji))
 	} else {
 		fmt.Fprintln(w, "hide dot files:\t "+red(wrongEmoji))
 	}
 
-	fmt.Fprintln(w, fmt.Sprintf("Read/Write Timeout:\t %v", fs.c.timeout))
+	fmt.Fprintln(w, fmt.Sprintf("Read/Write Timeout:\t %v", fs.config.timeout))
 
 	err := w.Flush()
 	if err != nil {

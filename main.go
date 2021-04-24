@@ -32,7 +32,7 @@ func main() {
 	keyFile := flag.String("key", "", "path to the private key file")
 	timeout := flag.Duration("timeout", defaultTimeout, "read/write timeout")
 	hideDotFiles := flag.Bool("no-dotfiles", false, "weather to show file starting with dot i.e. hidden files")
-	silent := flag.Bool("silent", false, "Suppress log messages from output")
+	quiet := flag.Bool("quiet", false, "Suppress log messages from output")
 	logIP := flag.Bool("log-ip", false, "Log ip address of incoming request")
 	gzip := flag.Bool("gzip", false, "enable gzip")
 	username := flag.String("username", "", "Username for basic authentication")
@@ -66,7 +66,7 @@ func main() {
 		gzipEnable:   *gzip,
 		timeout:      *timeout,
 		hideDotFiles: *hideDotFiles,
-		silent:       *silent,
+		quiet:        *quiet,
 		logIP:        *logIP,
 		username:     *username,
 		password:     *password,

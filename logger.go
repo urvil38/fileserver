@@ -21,26 +21,24 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 	lrw.ResponseWriter.WriteHeader(code)
 }
 
-func loggingHandler(h http.Handler, c Config) http.Handler {
+func loggingHandler(h http.Handler, logIP bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		lrw := newLoggingResponseWriter(w)
 		h.ServeHTTP(lrw, r)
-		if c.logIP {
-			log.Printf("- %v - [%v] \"%v\" %v\n", remoteAddr(r), r.Method, r.URL, lrw.statusCode)
+		if logIP {
+			log.Printf("- %v - [%v] %v - \"%v\"\n", remoteAddr(r), r.Method, lrw.statusCode, r.URL)
 		} else {
-			log.Printf("[%v] \"%v\" %v\n", r.Method, r.URL, lrw.statusCode)
+			log.Printf("[%v] %v - \"%v\"\n", r.Method, lrw.statusCode, r.URL)
 		}
 	})
 }
 
 func remoteAddr(r *http.Request) string {
-	var addr string
+	addr := r.RemoteAddr
 
 	if r.Header.Get("x-forwarded-for") != "" {
-		addr += r.Header.Get("x-forwarded-for")
+		addr = r.Header.Get("x-forwarded-for")
 	}
-
-	addr += r.RemoteAddr
 
 	return addr
 }

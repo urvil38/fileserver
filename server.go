@@ -9,29 +9,22 @@ import (
 	"net/http"
 )
 
-const (
-	correctEmoji = "✔︎"
-	wrongEmoji   = "✗"
-)
-
 type fileServer struct {
-	c               Config
-	s               *http.Server
+	config          Config
+	server          *http.Server
 	scheme          string
 	TLSEnable       bool
 	BasicAuthEnable bool
 }
 
 func NewFileServer(c Config) *fileServer {
-	s := http.Server{
-		ReadTimeout:  c.timeout,
-		WriteTimeout: c.timeout,
-		Addr:         net.JoinHostPort(c.host, c.port),
-	}
-
 	fs := &fileServer{
-		c: c,
-		s: &s,
+		config: c,
+		server: &http.Server{
+			ReadTimeout:  c.timeout,
+			WriteTimeout: c.timeout,
+			Addr:         net.JoinHostPort(c.host, c.port),
+		},
 	}
 
 	var fSys http.FileSystem
@@ -44,10 +37,12 @@ func NewFileServer(c Config) *fileServer {
 
 	h := http.FileServer(fSys)
 
+	if !c.quiet {
+		h = loggingHandler(h, c.logIP)
+	}
+
 	if c.gzipEnable {
-		s.Handler = gzipHandler(h)
-	} else {
-		s.Handler = h
+		h = gzipHandler(h)
 	}
 
 	if c.username != "" && c.password != "" {
@@ -58,12 +53,10 @@ func NewFileServer(c Config) *fileServer {
 			relm:     "Please enter your username and password for this site",
 		}
 
-		s.Handler = a.basicAuthHandler(s.Handler)
+		h = a.basicAuthHandler(h)
 	}
 
-	if !c.silent {
-		s.Handler = loggingHandler(s.Handler, c)
-	}
+	fs.server.Handler = h
 
 	if c.keyFile != "" && c.certFile != "" {
 		fs.TLSEnable = true
@@ -80,12 +73,12 @@ func (fs *fileServer) Start() {
 	fmt.Print(fs)
 
 	if fs.TLSEnable {
-		err := fs.s.ListenAndServeTLS(fs.c.certFile, fs.c.keyFile)
+		err := fs.server.ListenAndServeTLS(fs.config.certFile, fs.config.keyFile)
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
 	} else {
-		err := fs.s.ListenAndServe()
+		err := fs.server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}
@@ -93,7 +86,7 @@ func (fs *fileServer) Start() {
 }
 
 func (fs *fileServer) Stop(ctx context.Context) {
-	err := fs.s.Shutdown(ctx)
+	err := fs.server.Shutdown(ctx)
 	if err != nil {
 		if err == context.DeadlineExceeded {
 			log.Println("finish: shutdown timeout")

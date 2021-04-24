@@ -56,6 +56,12 @@ static: prebuild ## Builds a static executable.
 				-tags "$(BUILDTAGS) static_build" \
 				${GO_LDFLAGS_STATIC} -o $(NAME) .
 
+static-install: prebuild ## Builds a static executable.
+	@echo "+ $@"
+	CGO_ENABLED=$(CGO_ENABLED) $(GO) install \
+				-tags "$(BUILDTAGS) static_build" \
+				${GO_LDFLAGS_STATIC} .
+
 all: clean build fmt test staticcheck vet install ## Runs a clean, build, fmt, lint, test, staticcheck, vet and install.
 
 .PHONY: fmt
@@ -157,7 +163,7 @@ tag: ## Create a new git tag to prepare to build a release.
 REGISTRY := hub.docker.com
 .PHONY: image
 image: ## Create the docker image from the Dockerfile.
-	@docker build --rm --force-rm -t $(REGISTRY)/$(NAME) .
+	@docker build --rm --force-rm -t $(REGISTRY)/$(NAME):$(VERSION) .
 
 .PHONY: image-dev
 image-dev:
