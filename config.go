@@ -44,9 +44,11 @@ func (fs fileServer) String() string {
 	sb.WriteString(yellowUnderline("Available on:\n"))
 	var addrs []string
 	if fs.config.host == defaultAddr {
-		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, "127.0.0.1", fs.config.port)))
-		extIP, _ := externalIP()
-		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, extIP, fs.config.port)))
+		//addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, "127.0.0.1", fs.config.port)))
+		extIPs, _ := externalIPs()
+		for _, extIP := range extIPs {
+			addrs = append(addrs, green(fmt.Sprintf("\t%v:\t%v%v:%v", extIP.inter, fs.scheme, extIP.addr.String(), fs.config.port)))
+		}
 	} else {
 		addrs = append(addrs, green(fmt.Sprintf("\t%v%v:%v", fs.scheme, fs.config.host, fs.config.port)))
 	}

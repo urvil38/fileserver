@@ -1,23 +1,33 @@
 package main
 
-import "net"
+import (
+	"net"
 
-func externalIP() (string, error) {
+	"inet.af/netaddr"
+)
+
+type Addr struct {
+	addr  netaddr.IP
+	inter string
+}
+
+func externalIPs() ([]Addr, error) {
+	var ips []Addr
 	ifaces, err := net.Interfaces()
 	if err != nil {
-		return "", err
+		return ips, err
 	}
+
 	for _, iface := range ifaces {
 		if iface.Flags&net.FlagUp == 0 {
 			continue // interface down
 		}
-		if iface.Flags&net.FlagLoopback != 0 {
-			continue // loopback interface
-		}
+
 		addrs, err := iface.Addrs()
 		if err != nil {
-			return "", err
+			return ips, err
 		}
+
 		for _, addr := range addrs {
 			var ip net.IP
 			switch v := addr.(type) {
@@ -26,16 +36,21 @@ func externalIP() (string, error) {
 			case *net.IPAddr:
 				ip = v.IP
 			}
-			if ip == nil || ip.IsLoopback() {
+
+			nip, ok := netaddr.FromStdIP(ip)
+			if !ok {
 				continue
 			}
 
-			ip = ip.To4()
-			if ip == nil {
-				continue // not an ipv4 address
+			if nip.Is6() {
+				continue
 			}
-			return ip.String(), nil
+
+			ips = append(ips, Addr{
+				addr:  nip,
+				inter: iface.Name,
+			})
 		}
 	}
-	return defaultAddr, nil
+	return ips, nil
 }
