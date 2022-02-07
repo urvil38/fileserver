@@ -7,32 +7,32 @@
 
 - Download appropriate pre-compiled binary from the [release](https://github.com/urvil38/fileserver/releases) page.
 
-```
+```sh
 # download binary using cURL
-$ curl -L https://github.com/urvil38/fileserver/releases/download/3.0.1/fileserver-darwin-amd64 -o fileserver
+curl -L https://github.com/urvil38/fileserver/releases/download/3.0.1/fileserver-darwin-amd64 -o fileserver
 
 # make binary executable
-$ chmod +x ./fileserver
+chmod +x ./fileserver
 
 # move it to bin dir (user need to has root privileges. run following command as root user using sudo.
-$ sudo mv ./fileserver /usr/local/bin
+sudo mv ./fileserver /usr/local/bin
 ```
 
 - Download using `go get`
 
-```
-$ go get -u github.com/urvil38/fileserver
+```sh
+go get -u github.com/urvil38/fileserver
 ```
 
 # Docker
 - Build Docker image:
-```
-$ make image
+```sh
+make image
 ```
 
 - Run fileserver using Docker:
-```
-$ docker run -d -p 8080:8080 -v $(PWD):/$(PWD) urvil38/fileserver:3.0.1 fileserver -port 8080 -path /
+```sh
+docker run -d -p 8080:8080 -v $(PWD):/$(PWD) urvil38/fileserver:3.0.1 fileserver -port 8080 -path /
 ```
 # Usage
 
@@ -69,8 +69,8 @@ Usage of fileserver:
 
 - If you want to build fileserver right away, you need a working [Go environment](https://golang.org/doc/install). It requires Go version 1.12 and above.
 
-```
-$ git clone https://github.com/urvil38/fileserver.git
-$ cd fileserver
-$ make
+```sh
+git clone https://github.com/urvil38/fileserver.git
+cd fileserver
+make build
 ```
