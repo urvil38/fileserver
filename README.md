@@ -9,7 +9,7 @@
 
 ```sh
 # download binary using cURL
-curl -L https://github.com/urvil38/fileserver/releases/download/3.0.1/fileserver-darwin-amd64 -o fileserver
+curl -L https://github.com/urvil38/fileserver/releases/download/3.0.2/fileserver-darwin-amd64 -o fileserver
 
 # make binary executable
 chmod +x ./fileserver
@@ -32,7 +32,7 @@ make image
 
 - Run fileserver using Docker:
 ```sh
-docker run -d -p 8080:8080 -v $(PWD):/$(PWD) urvil38/fileserver:3.0.1 fileserver -port 8080 -path /
+docker run -d -p 8080:8080 -v $(PWD):/$(PWD) urvil38/fileserver:3.0.2 fileserver -port 8080 -path /
 ```
 # Usage
 
